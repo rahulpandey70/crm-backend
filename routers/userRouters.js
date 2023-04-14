@@ -4,6 +4,8 @@ const { insertUser, getUserByEmail } = require("../model/userModel/userModel");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+const { createAccessJWT, createRefreshJWT } = require("../jwtToken/jwt");
+
 router.all("/", (req, res, next) => {
 	next();
 });
@@ -51,7 +53,10 @@ router.post("/login", async (req, res) => {
 		return res.status(404).json({ msg: "Your password is wrong!" });
 	}
 
-	res.status(200).json({ msg: result, user });
+	const accessToken = await createAccessJWT(user.email);
+	const refreshToken = await createRefreshJWT(user.email);
+
+	res.status(200).json({ msg: result, user, accessToken, refreshToken });
 });
 
 module.exports = router;
