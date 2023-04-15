@@ -20,6 +20,18 @@ const userSchema = new mongoose.Schema({
 		minlength: 8,
 		required: true,
 	},
+	refreshJWTToken: {
+		token: {
+			type: String,
+			maxlength: 400,
+			default: "",
+		},
+		addedAt: {
+			type: Date,
+			required: true,
+			default: Date.now(),
+		},
+	},
 });
 
 module.exports = {

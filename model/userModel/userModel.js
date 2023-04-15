@@ -28,4 +28,27 @@ const getUserByEmail = (email) => {
 	});
 };
 
-module.exports = { insertUser, getUserByEmail };
+const storeJwtRefreshToken = (_id, token) => {
+	return new Promise((resolve, reject) => {
+		try {
+			userSchema
+				.findOneAndUpdate(
+					{ _id },
+					{
+						$set: {
+							"refreshJWTToken.token": token,
+							"refreshJWTToken.addedAt": Date.now(),
+						},
+					},
+					{ new: true }
+				)
+				.then((data) => resolve(data))
+
+				.catch((err) => reject(err));
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
+module.exports = { insertUser, getUserByEmail, storeJwtRefreshToken };
