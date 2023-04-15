@@ -51,4 +51,28 @@ const storeJwtRefreshToken = (_id, token) => {
 	});
 };
 
-module.exports = { insertUser, getUserByEmail, storeJwtRefreshToken };
+const getUserById = (_id) => {
+	return new Promise((resolve, reject) => {
+		if (!_id) return new Error("Email not found!");
+
+		try {
+			userSchema
+				.findOne({ _id })
+				.then((data) => {
+					resolve(data);
+				})
+				.catch((error) => {
+					reject(error);
+				});
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
+module.exports = {
+	insertUser,
+	getUserByEmail,
+	getUserById,
+	storeJwtRefreshToken,
+};

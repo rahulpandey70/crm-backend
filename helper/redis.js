@@ -25,11 +25,21 @@ const setAccessJwtToRedis = (key, value) => {
 
 const getAccessJwtFromRedis = (key) => {
 	return new Promise((resolve, reject) => {
+		// try {
+		// 	client.get(key, (err, res) => {
+		// 		if (err) {
+		// 			reject(err);
+		// 		}
+		// 		resolve(res);
+		// 	});
+		// } catch (error) {
+		// 	reject(error);
+		// }
 		try {
-			client.get(key, (err, res) => {
-				if (err) reject(err);
-				resolve(res);
-			});
+			client
+				.get(key)
+				.then((res) => resolve(res))
+				.catch((err) => reject(err));
 		} catch (error) {
 			reject(error);
 		}
