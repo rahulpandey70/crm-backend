@@ -49,8 +49,18 @@ const verifyJwtAccessToken = (token) => {
 	}
 };
 
+// verify jwt token
+const verifyJwtRefreshToken = (token) => {
+	try {
+		return Promise.resolve(jwt.verify(token, process.env.JWT_REFRESH_SECRET));
+	} catch (error) {
+		return Promise.resolve(error);
+	}
+};
+
 module.exports = {
 	createAccessJWT,
 	createRefreshJWT,
 	verifyJwtAccessToken,
+	verifyJwtRefreshToken,
 };

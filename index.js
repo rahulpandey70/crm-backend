@@ -7,6 +7,7 @@ const morgan = require("morgan");
 
 const userRouter = require("./routers/userRouters");
 const ticketRouter = require("./routers/ticketRouters");
+const tokenRouter = require("./routers/tokenRouter");
 const handleError = require("./utils/errorHandlers");
 
 const mongoose = require("mongoose");
@@ -37,6 +38,7 @@ const PORT = 5000 || process.env.PORT;
 // router
 app.use("/v1/user", userRouter);
 app.use("/v1/ticket", ticketRouter);
+app.use("/v1/rf-token", tokenRouter);
 
 app.use("*", (req, res, next) => {
 	const error = new Error("Path not found!");
