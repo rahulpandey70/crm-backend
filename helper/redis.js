@@ -46,4 +46,16 @@ const getAccessJwtFromRedis = (key) => {
 	});
 };
 
-module.exports = { setAccessJwtToRedis, getAccessJwtFromRedis };
+const deleteOldJwtTokenfromRedis = (key) => {
+	try {
+		client.del(key);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+module.exports = {
+	setAccessJwtToRedis,
+	getAccessJwtFromRedis,
+	deleteOldJwtTokenfromRedis,
+};

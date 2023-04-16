@@ -1,5 +1,8 @@
 const { verifyJwtAccessToken } = require("../helper/jwt");
-const { getAccessJwtFromRedis } = require("../helper/redis");
+const {
+	getAccessJwtFromRedis,
+	deleteOldJwtTokenfromRedis,
+} = require("../helper/redis");
 
 const userAuthorization = async (req, res, next) => {
 	const { authorization } = req.headers;
@@ -17,7 +20,10 @@ const userAuthorization = async (req, res, next) => {
 
 		return next();
 	}
-	return res.status(403).json({ msg: "Token is not valid" });
+
+	deleteOldJwtTokenfromRedis(authorization);
+
+	res.status(403).json({ msg: "Token is not valid" });
 };
 
 module.exports = { userAuthorization };
