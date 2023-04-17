@@ -11,6 +11,7 @@ const saltRounds = 10;
 const { createAccessJWT, createRefreshJWT } = require("../helper/jwt");
 const { userAuthorization } = require("../middleware/authorization");
 const { resetPinToSetPass } = require("../model/resetPi/resetPinModel");
+const { emailProcess } = require("../helper/email");
 
 router.all("/", (req, res, next) => {
 	next();
@@ -82,10 +83,14 @@ router.post("/reset-password", async (req, res) => {
 
 	if (user && user._id) {
 		const setPin = await resetPinToSetPass(email);
-		return res.json(setPin);
-	}
 
-	res.json({ status: "Error", message: "Email isn't valid" });
+		await emailProcess(email, setPin.pin);
+
+		res.json({
+			status: "success",
+			message: "Pin sended to your email",
+		});
+	}
 });
 
 module.exports = router;
