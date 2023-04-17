@@ -17,6 +17,11 @@ const {
 	deletePin,
 } = require("../model/resetPi/resetPinModel");
 const { emailProcess } = require("../helper/email");
+const {
+	resetPassReqValidation,
+	updatePassValidation,
+	newUserValidation,
+} = require("../middleware/formValidationMiddleware");
 
 router.all("/", (req, res, next) => {
 	next();
@@ -32,7 +37,7 @@ router.get("/", userAuthorization, async (req, res) => {
 });
 
 // create new user
-router.post("/", async (req, res) => {
+router.post("/", newUserValidation, async (req, res) => {
 	const { name, address, email, phone, password } = req.body;
 	try {
 		// hash password
@@ -81,7 +86,7 @@ router.post("/login", async (req, res) => {
 });
 
 // reset password
-router.post("/reset-password", async (req, res) => {
+router.post("/reset-password", resetPassReqValidation, async (req, res) => {
 	const { email } = req.body;
 
 	const user = await getUserByEmail(email);
@@ -103,7 +108,7 @@ router.post("/reset-password", async (req, res) => {
 });
 
 // update database with new password
-router.patch("/reset-password", async (req, res) => {
+router.patch("/reset-password", updatePassValidation, async (req, res) => {
 	const { email, pin, newPassword } = req.body;
 
 	const resetPin = await getPin(email, pin);
