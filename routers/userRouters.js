@@ -3,6 +3,7 @@ const {
 	insertUser,
 	getUserByEmail,
 	getUserById,
+	updateDbPassword,
 } = require("../model/userModel/userModel");
 
 const bcrypt = require("bcrypt");
@@ -10,7 +11,11 @@ const saltRounds = 10;
 
 const { createAccessJWT, createRefreshJWT } = require("../helper/jwt");
 const { userAuthorization } = require("../middleware/authorization");
-const { resetPinToSetPass } = require("../model/resetPi/resetPinModel");
+const {
+	resetPinToSetPass,
+	getPin,
+	deletePin,
+} = require("../model/resetPi/resetPinModel");
 const { emailProcess } = require("../helper/email");
 
 router.all("/", (req, res, next) => {
@@ -23,7 +28,7 @@ router.get("/", userAuthorization, async (req, res) => {
 
 	const userProfile = await getUserById(_id);
 
-	res.json({ user: userProfile });
+	res.json({ status: "Success", user: userProfile });
 });
 
 // create new user
@@ -31,7 +36,7 @@ router.post("/", async (req, res) => {
 	const { name, address, email, phone, password } = req.body;
 	try {
 		// hash password
-		const hashPassword = await bcrypt.hashSync(password, saltRounds);
+		const hashPassword = bcrypt.hashSync(password, saltRounds);
 
 		const newUserObj = {
 			name,
@@ -72,7 +77,7 @@ router.post("/login", async (req, res) => {
 	const accessToken = await createAccessJWT(user.email, `${user._id}`);
 	const refreshToken = await createRefreshJWT(user.email, `${user._id}`);
 
-	res.status(200).json({ msg: result, user, accessToken, refreshToken });
+	res.status(200).json({ msg: accessToken, refreshToken });
 });
 
 // reset password
@@ -84,13 +89,57 @@ router.post("/reset-password", async (req, res) => {
 	if (user && user._id) {
 		const setPin = await resetPinToSetPass(email);
 
-		await emailProcess(email, setPin.pin);
+		await emailProcess({
+			email,
+			pin: setPin.pin,
+			type: "reset-password-request",
+		});
 
 		res.json({
 			status: "success",
 			message: "Pin sended to your email",
 		});
 	}
+});
+
+// update database with new password
+router.patch("/reset-password", async (req, res) => {
+	const { email, pin, newPassword } = req.body;
+
+	const resetPin = await getPin(email, pin);
+
+	if (resetPin._id) {
+		const dbDate = resetPin.addedAt;
+		const expiresIn = 1;
+
+		const expDate = dbDate.setDate(dbDate.getDate() + expiresIn);
+
+		const today = new Date();
+
+		if (today > expDate) {
+			return res.json({ msg: "Invalid or expired pin" });
+		}
+
+		const hashPassword = bcrypt.hashSync(newPassword, saltRounds);
+
+		const user = await updateDbPassword(email, hashPassword);
+
+		await emailProcess({ email, type: "password-update-request" });
+
+		deletePin(email, pin);
+
+		if (user._id) {
+			return res.json({
+				status: "Success",
+				msg: "Your password has been updated",
+			});
+		}
+	}
+
+	res.json({
+		status: "Error",
+		msg: "Unable to update your password, Please try again later",
+	});
 });
 
 module.exports = router;

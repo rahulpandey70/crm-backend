@@ -22,6 +22,40 @@ const resetPinToSetPass = (email) => {
 	});
 };
 
+const getPin = (email, pin) => {
+	return new Promise((resolve, reject) => {
+		try {
+			resetPinSchema
+				.findOne({ email, pin })
+				.then((data) => {
+					resolve(data);
+				})
+				.catch((error) => {
+					reject(error);
+				});
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
+const deletePin = (email, pin) => {
+	try {
+		resetPinSchema
+			.findOneAndDelete({ email, pin })
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	} catch (error) {
+		console.log(error);
+	}
+};
+
 module.exports = {
 	resetPinToSetPass,
+	getPin,
+	deletePin,
 };

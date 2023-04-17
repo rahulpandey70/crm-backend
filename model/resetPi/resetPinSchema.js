@@ -10,6 +10,11 @@ const resetPinSchema = new mongoose.Schema({
 		minlength: 6,
 		maxlength: 6,
 	},
+	addedAt: {
+		type: Date,
+		required: true,
+		default: Date.now(),
+	},
 });
 
 module.exports = {
