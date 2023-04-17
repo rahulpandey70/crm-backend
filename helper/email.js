@@ -14,10 +14,6 @@ const sendMail = (info) => {
 		try {
 			let result = await transporter.sendMail(info);
 
-			console.log("Message sent: %s", result.messageId);
-
-			console.log("Preview URL: %s", nodemailer.getTestMessageUrl(result));
-
 			resolve(result);
 		} catch (error) {
 			reject(error);
