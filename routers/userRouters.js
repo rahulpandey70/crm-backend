@@ -22,6 +22,8 @@ const {
 	updatePassValidation,
 	newUserValidation,
 } = require("../middleware/formValidationMiddleware");
+const { deleteOldJwtTokenfromRedis } = require("../helper/redis");
+const { storeJwtRefreshToken } = require("../model/userModel/userModel");
 
 router.all("/", (req, res, next) => {
 	next();
@@ -82,7 +84,7 @@ router.post("/login", async (req, res) => {
 	const accessToken = await createAccessJWT(user.email, `${user._id}`);
 	const refreshToken = await createRefreshJWT(user.email, `${user._id}`);
 
-	res.status(200).json({ msg: accessToken, refreshToken });
+	res.status(200).json({ msg: "Success", accessToken, refreshToken });
 });
 
 // reset password
@@ -144,6 +146,28 @@ router.patch("/reset-password", updatePassValidation, async (req, res) => {
 	res.json({
 		status: "Error",
 		msg: "Unable to update your password, Please try again later",
+	});
+});
+
+// logout
+router.delete("/logout", userAuthorization, async (req, res) => {
+	const { authorization } = req.headers;
+
+	const _id = req.userId;
+
+	// delete access token from redis db
+	deleteOldJwtTokenfromRedis(authorization);
+
+	// set empty refresh token to mongodb
+	const result = await storeJwtRefreshToken(_id, "");
+
+	if (result._id) {
+		return res.json({ status: "Success", message: "Logout successfully" });
+	}
+
+	res.json({
+		status: "Error",
+		message: "Unable to logout, Please try again later.",
 	});
 });
 
