@@ -15,7 +15,7 @@ const {
 	resetPinToSetPass,
 	getPin,
 	deletePin,
-} = require("../model/resetPi/resetPinModel");
+} = require("../model/resetPin/resetPinModel");
 const { emailProcess } = require("../helper/email");
 const {
 	resetPassReqValidation,
