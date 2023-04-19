@@ -54,9 +54,13 @@ router.post("/", newUserValidation, async (req, res) => {
 		};
 
 		const newUser = await insertUser(newUserObj);
-		res.status(201).json({ msg: "user added successfully", newUser });
+		return res.json({
+			status: "Success",
+			msg: "user added successfully",
+			newUser,
+		});
 	} catch (error) {
-		res.status(404).json({ msg: error.message });
+		res.json({ status: "Error", msg: error.message });
 	}
 });
 
@@ -78,13 +82,18 @@ router.post("/login", async (req, res) => {
 	const result = await bcrypt.compare(password, passwordFromDB);
 
 	if (!result) {
-		return res.status(404).json({ msg: "Your password is wrong!" });
+		return res.json({ status: "Error", msg: "Your password is wrong!" });
 	}
 
 	const accessToken = await createAccessJWT(user.email, `${user._id}`);
 	const refreshToken = await createRefreshJWT(user.email, `${user._id}`);
 
-	res.status(200).json({ msg: "Success", accessToken, refreshToken });
+	res.json({
+		status: "Success",
+		msg: "Login successfully",
+		accessToken,
+		refreshToken,
+	});
 });
 
 // reset password
