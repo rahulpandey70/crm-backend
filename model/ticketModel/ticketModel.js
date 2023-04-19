@@ -61,4 +61,27 @@ const updateClientReply = ({ _id, message, sender }) => {
 	});
 };
 
-module.exports = { insertTicket, getTickets, getTicketById, updateClientReply };
+const updateTicketStatus = ({ _id, clientId }) => {
+	return new Promise((resolve, reject) => {
+		try {
+			ticketSchema
+				.findOneAndUpdate(
+					{ _id, clientId },
+					{ status: "Closed" },
+					{ new: true }
+				)
+				.then((data) => resolve(data))
+				.catch((error) => reject(error));
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
+module.exports = {
+	insertTicket,
+	getTickets,
+	getTicketById,
+	updateClientReply,
+	updateTicketStatus,
+};
