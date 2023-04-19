@@ -39,12 +39,12 @@ const getTicketById = (_id, clientId) => {
 	});
 };
 
-const updateClientReply = ({ _id, message, sender }) => {
+const updateClientReply = ({ _id, clientId, message, sender }) => {
 	return new Promise((resolve, reject) => {
 		try {
 			ticketSchema
 				.findOneAndUpdate(
-					{ _id },
+					{ _id, clientId },
 					{
 						status: "Approved",
 						$push: {
@@ -78,10 +78,24 @@ const updateTicketStatus = ({ _id, clientId }) => {
 	});
 };
 
+const deleteTicket = ({ _id, clientId }) => {
+	return new Promise((resolve, reject) => {
+		try {
+			ticketSchema
+				.findOneAndDelete({ _id, clientId })
+				.then((data) => resolve(data))
+				.catch((error) => reject(error));
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
 module.exports = {
 	insertTicket,
 	getTickets,
 	getTicketById,
 	updateClientReply,
 	updateTicketStatus,
+	deleteTicket,
 };

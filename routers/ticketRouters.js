@@ -5,6 +5,7 @@ const {
 	getTicketById,
 	updateClientReply,
 	updateTicketStatus,
+	deleteTicket,
 } = require("../model/ticketModel/ticketModel");
 
 const router = require("express").Router();
@@ -94,8 +95,9 @@ router.put("/:_id", userAuthorization, async (req, res) => {
 	try {
 		const { message, sender } = req.body;
 		const { _id } = req.params;
+		const clientId = req.userId;
 
-		const result = await updateClientReply({ _id, message, sender });
+		const result = await updateClientReply({ _id, clientId, message, sender });
 
 		if (result._id) {
 			return res.json({
@@ -134,6 +136,33 @@ router.patch("/close-ticket/:_id", userAuthorization, async (req, res) => {
 		res.json({
 			status: "Error",
 			message: "Unable to close your ticket! Please Try later",
+		});
+	} catch (error) {
+		res.json({
+			status: "Error",
+			message: error.message,
+		});
+	}
+});
+
+// delete ticket
+router.delete("/:_id", userAuthorization, async (req, res) => {
+	try {
+		const { _id } = req.params;
+		const clientId = req.userId;
+
+		const result = await deleteTicket({ _id, clientId });
+
+		if (result._id) {
+			return res.json({
+				status: "Success",
+				message: "Ticket has been deleted!",
+			});
+		}
+
+		res.json({
+			status: "Error",
+			message: "Unable to delete your ticket! Please Try later",
 		});
 	} catch (error) {
 		res.json({
