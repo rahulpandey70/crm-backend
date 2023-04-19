@@ -2,6 +2,7 @@ const { userAuthorization } = require("../middleware/authorization");
 const {
 	insertTicket,
 	getTickets,
+	getTicketById,
 } = require("../model/ticketModel/ticketModel");
 
 const router = require("express").Router();
@@ -52,6 +53,27 @@ router.get("/", userAuthorization, async (req, res) => {
 		const userId = req.userId;
 
 		const result = await getTickets(userId);
+
+		res.json({
+			status: "Success",
+			message: result,
+		});
+	} catch (error) {
+		res.json({
+			status: "Error",
+			message: error.message,
+		});
+	}
+});
+
+// get single ticket
+router.get("/:ticketId", userAuthorization, async (req, res) => {
+	try {
+		const { ticketId } = req.params;
+
+		const clientId = req.userId;
+
+		const result = await getTicketById(ticketId, clientId);
 
 		res.json({
 			status: "Success",
