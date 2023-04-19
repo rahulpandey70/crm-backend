@@ -3,6 +3,7 @@ const {
 	insertTicket,
 	getTickets,
 	getTicketById,
+	updateClientReply,
 } = require("../model/ticketModel/ticketModel");
 
 const router = require("express").Router();
@@ -78,6 +79,33 @@ router.get("/:ticketId", userAuthorization, async (req, res) => {
 		res.json({
 			status: "Success",
 			message: result,
+		});
+	} catch (error) {
+		res.json({
+			status: "Error",
+			message: error.message,
+		});
+	}
+});
+
+// update reply message from client
+router.put("/:_id", userAuthorization, async (req, res) => {
+	try {
+		const { message, sender } = req.body;
+		const { _id } = req.params;
+
+		const result = await updateClientReply({ _id, message, sender });
+
+		if (result._id) {
+			return res.json({
+				status: "Success",
+				message: "Ticket message updated!",
+			});
+		}
+
+		res.json({
+			status: "Error",
+			message: "Unable to update message! Please Try later",
 		});
 	} catch (error) {
 		res.json({

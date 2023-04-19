@@ -39,4 +39,26 @@ const getTicketById = (_id, clientId) => {
 	});
 };
 
-module.exports = { insertTicket, getTickets, getTicketById };
+const updateClientReply = ({ _id, message, sender }) => {
+	return new Promise((resolve, reject) => {
+		try {
+			ticketSchema
+				.findOneAndUpdate(
+					{ _id },
+					{
+						status: "Approved",
+						$push: {
+							conversations: { message, sender },
+						},
+					},
+					{ new: true }
+				)
+				.then((data) => resolve(data))
+				.catch((error) => reject(error));
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
+module.exports = { insertTicket, getTickets, getTicketById, updateClientReply };
