@@ -1,5 +1,9 @@
 const { userAuthorization } = require("../middleware/authorization");
 const {
+	newTicketValidation,
+	TicketMessageValidation,
+} = require("../middleware/formValidationMiddleware");
+const {
 	insertTicket,
 	getTickets,
 	getTicketById,
@@ -93,8 +97,8 @@ router.get("/:ticketId", userAuthorization, async (req, res) => {
 // update reply message from client
 router.put(
 	"/:_id",
-	TicketMessageValidation,
 	userAuthorization,
+	TicketMessageValidation,
 	async (req, res) => {
 		try {
 			const { message, sender } = req.body;
