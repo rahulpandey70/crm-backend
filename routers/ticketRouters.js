@@ -1,4 +1,8 @@
-const { insertTicket } = require("../model/ticketModel/ticketModel");
+const { userAuthorization } = require("../middleware/authorization");
+const {
+	insertTicket,
+	getTickets,
+} = require("../model/ticketModel/ticketModel");
 
 const router = require("express").Router();
 
@@ -6,12 +10,15 @@ router.all("/", (req, res, next) => {
 	next();
 });
 
-router.post("/", async (req, res) => {
+// create new ticket
+router.post("/", userAuthorization, async (req, res) => {
 	try {
 		const { subject, sender, message } = req.body;
 
+		const userId = req.userId;
+
 		const ticketObj = {
-			clientId: "643cfe028fa24b49263421fd",
+			clientId: userId,
 			subject,
 			conversations: [
 				{
@@ -30,6 +37,25 @@ router.post("/", async (req, res) => {
 		res.json({
 			status: "Error",
 			message: "Somthing is wrong, Try Again later!",
+		});
+	} catch (error) {
+		res.json({
+			status: "Error",
+			message: error.message,
+		});
+	}
+});
+
+// get all ticket for a specific user
+router.get("/", userAuthorization, async (req, res) => {
+	try {
+		const userId = req.userId;
+
+		const result = await getTickets(userId);
+
+		res.json({
+			status: "Success",
+			message: result,
 		});
 	} catch (error) {
 		res.json({
