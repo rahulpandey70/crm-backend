@@ -63,7 +63,7 @@ router.get("/", userAuthorization, async (req, res) => {
 
 		res.json({
 			status: "Success",
-			message: result,
+			data: result,
 		});
 	} catch (error) {
 		res.json({
@@ -84,7 +84,7 @@ router.get("/:ticketId", userAuthorization, async (req, res) => {
 
 		res.json({
 			status: "Success",
-			message: result,
+			data: result,
 		});
 	} catch (error) {
 		res.json({
