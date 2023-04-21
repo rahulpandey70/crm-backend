@@ -35,7 +35,7 @@ router.get("/", userAuthorization, async (req, res) => {
 
 	const userProfile = await getUserById(_id);
 
-	res.json({ status: "Success", user: userProfile });
+	res.json({ status: "success", user: userProfile });
 });
 
 // create new user
@@ -55,12 +55,12 @@ router.post("/", newUserValidation, async (req, res) => {
 
 		const newUser = await insertUser(newUserObj);
 		return res.json({
-			status: "Success",
-			msg: "user added successfully",
+			status: "success",
+			message: "user added successfully",
 			newUser,
 		});
 	} catch (error) {
-		res.json({ status: "Error", msg: error.message });
+		res.json({ status: "error", message: error.message });
 	}
 });
 
@@ -69,28 +69,32 @@ router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
 
 	if (!email || !password)
-		return res.json({ msg: "Please Enter email or password!" });
+		return res.json({
+			status: "error",
+			message: "Please Enter email or password!",
+		});
 
 	// getting email from db
 	const user = await getUserByEmail(email);
 
 	const passwordFromDB = user && user._id ? user.password : null;
 
-	if (!passwordFromDB) return res.json({ msg: "Wrong email or password!" });
+	if (!passwordFromDB)
+		return res.json({ status: "error", message: "Wrong email or password!" });
 
 	// comparing password from db
 	const result = await bcrypt.compare(password, passwordFromDB);
 
 	if (!result) {
-		return res.json({ status: "Error", msg: "Your password is wrong!" });
+		return res.json({ status: "error", message: "Your password is wrong!" });
 	}
 
 	const accessToken = await createAccessJWT(user.email, `${user._id}`);
 	const refreshToken = await createRefreshJWT(user.email, `${user._id}`);
 
 	res.json({
-		status: "Success",
-		msg: "Login successfully",
+		status: "success",
+		message: "Login successfully",
 		accessToken,
 		refreshToken,
 	});
@@ -133,7 +137,7 @@ router.patch("/reset-password", updatePassValidation, async (req, res) => {
 		const today = new Date();
 
 		if (today > expDate) {
-			return res.json({ msg: "Invalid or expired pin" });
+			return res.json({ status: "error", message: "Invalid or expired pin" });
 		}
 
 		const hashPassword = bcrypt.hashSync(newPassword, saltRounds);
@@ -146,15 +150,15 @@ router.patch("/reset-password", updatePassValidation, async (req, res) => {
 
 		if (user._id) {
 			return res.json({
-				status: "Success",
-				msg: "Your password has been updated",
+				status: "success",
+				message: "Your password has been updated",
 			});
 		}
 	}
 
 	res.json({
-		status: "Error",
-		msg: "Unable to update your password, Please try again later",
+		status: "error",
+		message: "Unable to update your password, Please try again later",
 	});
 });
 
@@ -171,11 +175,11 @@ router.delete("/logout", userAuthorization, async (req, res) => {
 	const result = await storeJwtRefreshToken(_id, "");
 
 	if (result._id) {
-		return res.json({ status: "Success", message: "Logout successfully" });
+		return res.json({ status: "success", message: "Logout successfully" });
 	}
 
 	res.json({
-		status: "Error",
+		status: "error",
 		message: "Unable to logout, Please try again later.",
 	});
 });

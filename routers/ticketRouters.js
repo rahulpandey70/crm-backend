@@ -39,16 +39,16 @@ router.post("/", newTicketValidation, userAuthorization, async (req, res) => {
 		const result = await insertTicket(ticketObj);
 
 		if (result._id) {
-			return res.json({ status: "Success", messgae: "New Ticket created!" });
+			return res.json({ status: "success", messgae: "New Ticket created!" });
 		}
 
 		res.json({
-			status: "Error",
+			status: "error",
 			message: "Somthing is wrong, Try Again later!",
 		});
 	} catch (error) {
 		res.json({
-			status: "Error",
+			status: "error",
 			message: error.message,
 		});
 	}
@@ -62,12 +62,12 @@ router.get("/", userAuthorization, async (req, res) => {
 		const result = await getTickets(userId);
 
 		res.json({
-			status: "Success",
+			status: "success",
 			data: result,
 		});
 	} catch (error) {
 		res.json({
-			status: "Error",
+			status: "error",
 			message: error.message,
 		});
 	}
@@ -83,12 +83,12 @@ router.get("/:ticketId", userAuthorization, async (req, res) => {
 		const result = await getTicketById(ticketId, clientId);
 
 		res.json({
-			status: "Success",
+			status: "success",
 			data: result,
 		});
 	} catch (error) {
 		res.json({
-			status: "Error",
+			status: "error",
 			message: error.message,
 		});
 	}
@@ -114,18 +114,18 @@ router.put(
 
 			if (result._id) {
 				return res.json({
-					status: "Success",
+					status: "success",
 					message: "Ticket message updated!",
 				});
 			}
 
 			res.json({
-				status: "Error",
+				status: "error",
 				message: "Unable to update message! Please Try later",
 			});
 		} catch (error) {
 			res.json({
-				status: "Error",
+				status: "error",
 				message: error.message,
 			});
 		}
@@ -142,18 +142,18 @@ router.patch("/close-ticket/:_id", userAuthorization, async (req, res) => {
 
 		if (result._id) {
 			return res.json({
-				status: "Success",
+				status: "success",
 				message: "Ticket has been closed!",
 			});
 		}
 
 		res.json({
-			status: "Error",
+			status: "error",
 			message: "Unable to close your ticket! Please Try later",
 		});
 	} catch (error) {
 		res.json({
-			status: "Error",
+			status: "error",
 			message: error.message,
 		});
 	}
@@ -168,12 +168,12 @@ router.delete("/:_id", userAuthorization, async (req, res) => {
 		await deleteTicket({ _id, clientId });
 
 		return res.json({
-			status: "Success",
+			status: "success",
 			message: "Ticket has been deleted!",
 		});
 	} catch (error) {
 		res.json({
-			status: "Error",
+			status: "error",
 			message: error.message,
 		});
 	}
