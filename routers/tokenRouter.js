@@ -22,7 +22,6 @@ router.get("/", async (req, res) => {
 
 			if (dbRefreshToken !== authorization && tokenCreatedAt < today) {
 				return res.status(403).json({
-					status: "error",
 					message: "Refresh token is expired! Please login again.",
 				});
 			}
@@ -36,7 +35,7 @@ router.get("/", async (req, res) => {
 		}
 	}
 
-	res.json({ status: "error", message: "Refresh token is not valid." });
+	res.status(403).json({ message: "Refresh token is not valid." });
 });
 
 module.exports = router;
